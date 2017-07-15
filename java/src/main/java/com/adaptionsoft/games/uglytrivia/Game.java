@@ -166,7 +166,6 @@ public class Game {
 
         }
         else {
-
             System.out.println("Answer was corrent!!!!");
             purses[currentPlayer]++;
             System.out.println(players.get(currentPlayer)
