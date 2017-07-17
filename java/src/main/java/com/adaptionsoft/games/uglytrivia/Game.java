@@ -97,7 +97,7 @@ public class Game {
         }
     }
 
-    public boolean wasCorrectlyAnswered() {
+    public void wasCorrectlyAnswered() {
         if(currentPlayer.isInPenaltyBox()) {
             if(isGettingOutOfPenaltyBox) {
                 System.out.println("Answer was correct!!!!");
@@ -106,18 +106,7 @@ public class Game {
                                    + " now has "
                                    + currentPlayer.getCoins()
                                    + " Gold Coins.");
-
-                boolean winner = didPlayerWin();
-                nextPlayer();
-
-                return winner;
             }
-            else {
-                nextPlayer();
-                return true;
-            }
-
-
         }
         else {
             System.out.println("Answer was corrent!!!!");
@@ -126,12 +115,16 @@ public class Game {
                                + " now has "
                                + currentPlayer.getCoins()
                                + " Gold Coins.");
-
-            boolean winner = didPlayerWin();
-            nextPlayer();
-
-            return winner;
         }
+        nextPlayer();
+    }
+
+    public void wasWronglyAnswered() {
+        System.out.println("Question was incorrectly answered");
+        System.out.println(currentPlayer + " was sent to the penalty box");
+        currentPlayer.setInPenaltyBox(true);
+
+        nextPlayer();
     }
 
     private void nextPlayer() {
@@ -140,17 +133,10 @@ public class Game {
         currentPlayer = players.get(next);
     }
 
-    public boolean wrongAnswer() {
-        System.out.println("Question was incorrectly answered");
-        System.out.println(currentPlayer + " was sent to the penalty box");
-        currentPlayer.setInPenaltyBox(true);
-
-        nextPlayer();
-        return true;
+    public boolean hasAWinner() {
+        return players.stream()
+                      .map(Player::getCoins)
+                      .anyMatch(coins -> coins == 6);
     }
 
-
-    private boolean didPlayerWin() {
-        return !(currentPlayer.getCoins() == 6);
-    }
 }
