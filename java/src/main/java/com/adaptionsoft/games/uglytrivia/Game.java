@@ -84,34 +84,17 @@ public class Game {
     }
 
     private Category currentCategory() {
-        if(currentPlayer.getPlace() == 0) {
-            return POP;
+        int placeMod = currentPlayer.getPlace() % 4;
+        switch(placeMod) {
+            case 0:
+                return POP;
+            case 1:
+                return SCIENCE;
+            case 2:
+                return SPORTS;
+            default:
+                return ROCK;
         }
-        if(currentPlayer.getPlace() == 4) {
-            return POP;
-        }
-        if(currentPlayer.getPlace() == 8) {
-            return POP;
-        }
-        if(currentPlayer.getPlace() == 1) {
-            return SCIENCE;
-        }
-        if(currentPlayer.getPlace() == 5) {
-            return SCIENCE;
-        }
-        if(currentPlayer.getPlace() == 9) {
-            return SCIENCE;
-        }
-        if(currentPlayer.getPlace() == 2) {
-            return SPORTS;
-        }
-        if(currentPlayer.getPlace() == 6) {
-            return SPORTS;
-        }
-        if(currentPlayer.getPlace() == 10) {
-            return SPORTS;
-        }
-        return ROCK;
     }
 
     public boolean wasCorrectlyAnswered() {
