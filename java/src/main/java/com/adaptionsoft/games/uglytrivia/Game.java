@@ -11,7 +11,7 @@ public class Game {
     private Map<Category, List<String>> categoryQuestions = new HashMap<>();
 
     private Player currentPlayer = null;
-    boolean isGettingOutOfPenaltyBox;
+    private boolean canPlayThisTurn = false;
 
     public Game() {
         createQuestions();
@@ -48,26 +48,8 @@ public class Game {
         System.out.println(currentPlayer + " is the current player");
         System.out.println("They have rolled a " + roll);
 
-        if(currentPlayer.isInPenaltyBox()) {
-            if(roll % 2 != 0) {
-                isGettingOutOfPenaltyBox = true;
-
-                System.out.println(currentPlayer + " is getting out of the penalty box");
-                currentPlayer.moveForward(roll);
-
-                System.out.println(currentPlayer
-                                   + "'s new location is "
-                                   + currentPlayer.getPlace());
-                System.out.println("The category is " + currentCategory());
-                askQuestion();
-            }
-            else {
-                System.out.println(currentPlayer + " is not getting out of the penalty box");
-                isGettingOutOfPenaltyBox = false;
-            }
-
-        }
-        else {
+        updateCanPlayThisTurn(roll);
+        if(canPlayThisTurn) {
             currentPlayer.moveForward(roll);
 
             System.out.println(currentPlayer
@@ -76,7 +58,22 @@ public class Game {
             System.out.println("The category is " + currentCategory());
             askQuestion();
         }
+    }
 
+    private void updateCanPlayThisTurn(int roll) {
+        if(currentPlayer.isInPenaltyBox()) {
+            if(roll % 2 != 0) {
+                canPlayThisTurn = true;
+                System.out.println(currentPlayer + " is getting out of the penalty box");
+            }
+            else {
+                canPlayThisTurn = false;
+                System.out.println(currentPlayer + " is not getting out of the penalty box");
+            }
+        }
+        else {
+            canPlayThisTurn = true;
+        }
     }
 
     private void askQuestion() {
@@ -97,8 +94,18 @@ public class Game {
         }
     }
 
-    public void wasCorrectlyAnswered() {
-        if(! (currentPlayer.isInPenaltyBox() && ! isGettingOutOfPenaltyBox)) {
+    public void answer(boolean correct) {
+        if(correct) {
+            wasCorrectlyAnswered();
+        }
+        else {
+            wasWronglyAnswered();
+        }
+        nextPlayer();
+    }
+
+    private void wasCorrectlyAnswered() {
+        if(! (currentPlayer.isInPenaltyBox() && !canPlayThisTurn)) {
             System.out.println("Answer was correct!!!!");
             currentPlayer.addCoin();
             System.out.println(currentPlayer
@@ -106,16 +113,12 @@ public class Game {
                                + currentPlayer.getCoins()
                                + " Gold Coins.");
         }
-
-        nextPlayer();
     }
 
-    public void wasWronglyAnswered() {
+    private void wasWronglyAnswered() {
         System.out.println("Question was incorrectly answered");
         System.out.println(currentPlayer + " was sent to the penalty box");
         currentPlayer.setInPenaltyBox(true);
-
-        nextPlayer();
     }
 
     private void nextPlayer() {
