@@ -21,13 +21,7 @@ public class GameRunner {
 
         do {
             aGame.roll(rand.nextInt(5) + 1);
-
-            if(rand.nextInt(9) == 7) {
-                aGame.wasWronglyAnswered();
-            }
-            else {
-                aGame.wasCorrectlyAnswered();
-            }
+            aGame.answer(rand.nextInt(9) != 7);
         } while(! aGame.hasAWinner());
     }
 }
