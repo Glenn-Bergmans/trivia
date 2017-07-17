@@ -98,24 +98,15 @@ public class Game {
     }
 
     public void wasCorrectlyAnswered() {
-        if(currentPlayer.isInPenaltyBox()) {
-            if(isGettingOutOfPenaltyBox) {
-                System.out.println("Answer was correct!!!!");
-                currentPlayer.addCoin();
-                System.out.println(currentPlayer
-                                   + " now has "
-                                   + currentPlayer.getCoins()
-                                   + " Gold Coins.");
-            }
-        }
-        else {
-            System.out.println("Answer was corrent!!!!");
+        if(! (currentPlayer.isInPenaltyBox() && ! isGettingOutOfPenaltyBox)) {
+            System.out.println("Answer was correct!!!!");
             currentPlayer.addCoin();
             System.out.println(currentPlayer
                                + " now has "
                                + currentPlayer.getCoins()
                                + " Gold Coins.");
         }
+
         nextPlayer();
     }
 
