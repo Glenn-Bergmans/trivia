@@ -34,7 +34,7 @@ public class SomeTest {
 	@Test
 	public void systemTest() throws Exception {
         // GIVEN
-	    when(random.nextInt(anyInt())).thenReturn(1, 0, 3, 1, 3, 5, 1, 8, 3, 1, 1, 0, 3, 7, 0, 8, 4, 4, 0, 5, 0, 7, 2, 7, 0, 7, 0, 8, 3, 5, 4, 6, 0, 3, 4, 3, 0, 0, 3, 7, 0, 4, 3, 6, 1, 8, 0, 3);
+	    when(random.nextInt(anyInt())).thenReturn(1, 0, 3, 1, 3, 5, 1, 8, 3, 1, 1, 0, 3, 7, 0, 8, 4, 4, 0, 5, 0, 7, 2, 7, 0, 7, 0, 8, 3, 4, 6, 0, 3, 4, 3, 0, 0, 3, 0, 4, 3, 1, 0, 3);
 
 	    // WHEN
         GameRunner.runGame(random);
@@ -185,8 +185,6 @@ public class SomeTest {
                                                     "Pat is the current player\r\n" +
                                                     "They have rolled a 4\r\n" +
                                                     "Pat is not getting out of the penalty box\r\n" +
-                                                    "Question was incorrectly answered\r\n" +
-                                                    "Pat was sent to the penalty box\r\n" +
                                                     "Sue is the current player\r\n" +
                                                     "They have rolled a 1\r\n" +
                                                     "Sue is getting out of the penalty box\r\n" +

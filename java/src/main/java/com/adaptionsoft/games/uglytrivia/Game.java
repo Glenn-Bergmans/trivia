@@ -1,31 +1,25 @@
 package com.adaptionsoft.games.uglytrivia;
 
+import com.adaptionsoft.games.uglytrivia.phase.Phase;
+import com.adaptionsoft.games.uglytrivia.phase.actions.AnswerAction;
+import com.adaptionsoft.games.uglytrivia.phase.actions.RollAction;
+import com.adaptionsoft.games.uglytrivia.phase.handlers.MovementPhaseHandler;
+import com.adaptionsoft.games.uglytrivia.phase.handlers.QuestionPhaseHandler;
+
 import java.util.*;
 
 import static com.adaptionsoft.games.uglytrivia.Category.*;
+import static com.adaptionsoft.games.uglytrivia.phase.Phase.MOVEMENT;
+import static com.adaptionsoft.games.uglytrivia.phase.Phase.QUESTION;
 import static java.util.Arrays.*;
 
 public class Game {
     private List<Player> players = new ArrayList<>();
-
-    private Map<Category, List<String>> categoryQuestions = new HashMap<>();
-
     private Player currentPlayer = null;
-    private boolean canPlayThisTurn = false;
 
-    public Game() {
-        createQuestions();
-    }
-
-    private void createQuestions() {
-        stream(Category.values()).forEach(category -> {
-            List<String> questions = new LinkedList<>();
-            for(int i = 0; i < 50; i++) {
-                questions.add(category + " Question " + i);
-            }
-            categoryQuestions.put(category, questions);
-        });
-    }
+    private Phase phase = MOVEMENT;
+    private MovementPhaseHandler movementPhaseHandler = new MovementPhaseHandler();
+    private QuestionPhaseHandler questionPhaseHandler = new QuestionPhaseHandler();
 
     public boolean isPlayable() {
         return (howManyPlayers() >= 2);
@@ -44,84 +38,29 @@ public class Game {
         return players.size();
     }
 
-    public void roll(int roll) {
-        System.out.println(currentPlayer + " is the current player");
-        System.out.println("They have rolled a " + roll);
-
-        updateCanPlayThisTurn(roll);
-        if(canPlayThisTurn) {
-            currentPlayer.moveForward(roll);
-
-            System.out.println(currentPlayer
-                               + "'s new location is "
-                               + currentPlayer.getPlace());
-            System.out.println("The category is " + currentCategory());
-            askQuestion();
-        }
-    }
-
-    private void updateCanPlayThisTurn(int roll) {
-        if(currentPlayer.isInPenaltyBox()) {
-            if(roll % 2 != 0) {
-                canPlayThisTurn = true;
-                System.out.println(currentPlayer + " is getting out of the penalty box");
-            }
-            else {
-                canPlayThisTurn = false;
-                System.out.println(currentPlayer + " is not getting out of the penalty box");
-            }
+    public void advancePhase() {
+        if(phase == MOVEMENT) {
+            phase = QUESTION;
         }
         else {
-            canPlayThisTurn = true;
+            nextPlayer();
+            phase = MOVEMENT;
         }
     }
 
-    private void askQuestion() {
-        System.out.println(categoryQuestions.get(currentCategory()).remove(0));
+    public void roll(int roll) {
+        movementPhaseHandler.handle(currentPlayer, this, new RollAction(roll));
     }
 
-    private Category currentCategory() {
-        int placeMod = currentPlayer.getPlace() % 4;
-        switch(placeMod) {
-            case 0:
-                return POP;
-            case 1:
-                return SCIENCE;
-            case 2:
-                return SPORTS;
-            default:
-                return ROCK;
-        }
+    public boolean canAnswer() {
+        return phase == QUESTION;
     }
 
     public void answer(boolean correct) {
-        if(correct) {
-            wasCorrectlyAnswered();
-        }
-        else {
-            wasWronglyAnswered();
-        }
-        nextPlayer();
+        questionPhaseHandler.handle(currentPlayer, this, new AnswerAction(correct));
     }
 
-    private void wasCorrectlyAnswered() {
-        if(! (currentPlayer.isInPenaltyBox() && !canPlayThisTurn)) {
-            System.out.println("Answer was correct!!!!");
-            currentPlayer.addCoin();
-            System.out.println(currentPlayer
-                               + " now has "
-                               + currentPlayer.getCoins()
-                               + " Gold Coins.");
-        }
-    }
-
-    private void wasWronglyAnswered() {
-        System.out.println("Question was incorrectly answered");
-        System.out.println(currentPlayer + " was sent to the penalty box");
-        currentPlayer.setInPenaltyBox(true);
-    }
-
-    private void nextPlayer() {
+    public void nextPlayer() {
         int index = players.indexOf(currentPlayer);
         int next = (index + 1) % players.size();
         currentPlayer = players.get(next);
