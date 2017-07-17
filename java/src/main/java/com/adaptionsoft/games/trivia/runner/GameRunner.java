@@ -22,28 +22,15 @@ public class GameRunner {
         aGame.add("Pat");
         aGame.add("Sue");
 
-        ArrayList<Integer> rolls = new ArrayList<>();
-
-        int roll = 0;
         do {
-            roll = rand.nextInt(5);
-            rolls.add(roll);
-            aGame.roll(roll + 1);
+            aGame.roll(rand.nextInt(5) + 1);
 
-            roll = rand.nextInt(9);
-            rolls.add(roll);
-            if(roll == 7) {
+            if(rand.nextInt(9) == 7) {
                 notAWinner = aGame.wrongAnswer();
             }
             else {
                 notAWinner = aGame.wasCorrectlyAnswered();
             }
         } while(notAWinner);
-
-        /*
-        rolls.forEach(value -> {
-            System.out.print(value + ", ");
-        });
-        */
     }
 }
