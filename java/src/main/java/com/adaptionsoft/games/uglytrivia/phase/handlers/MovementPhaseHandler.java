@@ -16,39 +16,24 @@ import static java.util.Arrays.stream;
 
 public class MovementPhaseHandler extends PhaseHandler {
 
-    private Map<Category, List<String>> categoryQuestions = new HashMap<>();
-
-    public MovementPhaseHandler() {
-        createQuestions();
+    public MovementPhaseHandler(Game game) {
+        super(game);
     }
 
-    private void createQuestions() {
-        stream(Category.values()).forEach(category -> {
-            List<String> questions = new LinkedList<>();
-            for(int i = 0; i < 50; i++) {
-                questions.add(category + " Question " + i);
-            }
-            categoryQuestions.put(category, questions);
-        });
-    }
-    
     @Override
-    public void handle(Player player, Game game, PlayerAction action) {
+    public void handle(PlayerAction action) {
         int roll = ((RollAction) action).getRoll();
 
         System.out.println(player + " is the current player");
         System.out.println("They have rolled a " + roll);
 
-        updateCanPlayThisTurn(player, roll);
+        updateCanPlayThisTurn(roll);
         if(player.canPlayThisTurn()) {
             player.moveForward(roll);
 
             System.out.println(player
                                + "'s new location is "
                                + player.getPlace());
-            Category category = categoryOf(player.getPlace());
-            System.out.println("The category is " + category);
-            askQuestion(category);
             game.advancePhase();
         }
         else {
@@ -56,7 +41,7 @@ public class MovementPhaseHandler extends PhaseHandler {
         }
     }
 
-    private void updateCanPlayThisTurn(Player player, int roll) {
+    private void updateCanPlayThisTurn(int roll) {
         if(player.isInPenaltyBox()) {
             if(roll % 2 != 0) {
                 player.setCanPlayThisTurn(true);
@@ -70,24 +55,6 @@ public class MovementPhaseHandler extends PhaseHandler {
         else {
             player.setCanPlayThisTurn(true);
         }
-    }
-
-    private Category categoryOf(int place) {
-        int placeMod = place % 4;
-        switch(placeMod) {
-            case 0:
-                return POP;
-            case 1:
-                return SCIENCE;
-            case 2:
-                return SPORTS;
-            default:
-                return ROCK;
-        }
-    }
-
-    private void askQuestion(Category category) {
-        System.out.println(categoryQuestions.get(category).remove(0));
     }
 
 }
